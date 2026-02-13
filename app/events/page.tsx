@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { EventCardSkeleton } from "@/components/ui/loading-skeleton";
 
 export default function EventsPage() {
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const events = dataStore.getEvents({ status: "Published" });
 
     return (

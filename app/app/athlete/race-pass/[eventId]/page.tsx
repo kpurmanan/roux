@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
-import { QrCode, CheckCircle2, Package, Plane, MapPin, Calendar } from "lucide-react";
+import { QrCode, CheckCircle2, Package, MapPin, Calendar } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export default function RacePassPage() {

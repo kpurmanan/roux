@@ -2,20 +2,20 @@
 
 import { useState, useEffect, use } from "react";
 import { useAuth } from "@/lib/auth/context";
+import { User } from "@/lib/types";
 import { dataStore } from "@/lib/data/store";
 import { athleteRepo } from "@/lib/data/repositories/athlete-repository";
 import { metricsRepo } from "@/lib/data/repositories/metrics-repository";
 import { activityRepo } from "@/lib/data/repositories/activity-repository";
 import { calculateTrainingLoad } from "@/lib/engine/metrics";
 import { GlassCard } from "@/components/ui/glass-card";
-import { StatusChip } from "@/components/ui/status-chip";
 import { Activity, MetricsSnapshot, PhysicalBaseline } from "@/lib/types/performance";
 import { formatTime } from "@/lib/utils";
 import {
-    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import {
-    Trophy, TrendingUp, Activity as ActivityIcon, Zap, AlertTriangle, Info, CheckCircle, Lock, ArrowLeft, Ruler, Scale, Heart
+    Activity as ActivityIcon, Zap, AlertTriangle, Info, CheckCircle, Lock, ArrowLeft, Ruler, Scale, Heart
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,7 @@ export default function CoachAthleteView({ params }: { params: Promise<{ id: str
     const athleteId = resolvedParams.id;
 
     // State
-    const [athlete, setAthlete] = useState<any>(null);
+    const [athlete, setAthlete] = useState<User | null>(null);
     const [metrics, setMetrics] = useState<MetricsSnapshot | null>(null);
     const [activities, setActivities] = useState<Activity[]>([]);
     const [baseline, setBaseline] = useState<PhysicalBaseline | null>(null);

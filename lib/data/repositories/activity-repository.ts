@@ -1,4 +1,4 @@
-import { Activity, ActivityType } from "@/lib/types/performance";
+import { Activity } from "@/lib/types/performance";
 import { generateId } from "@/lib/utils";
 
 class ActivityRepository {

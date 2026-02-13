@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Bell, User as UserIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
 import { StatusChip } from "./status-chip";
 import { dataStore } from "@/lib/data/store";

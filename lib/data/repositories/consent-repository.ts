@@ -21,14 +21,14 @@ class ConsentRepository {
     }
 
     // Check access helper
-    canCoachView(athleteId: string, coachId: string): boolean {
+    canCoachView(athleteId: string, _coachId: string): boolean {
         const consent = this.getConsent(athleteId);
         // In real app, we'd check if coachId matches linkedCoachId
         // For mock, we just check the boolean flag
         return !!consent?.allowCoachView;
     }
 
-    canClubView(athleteId: string, clubId: string): boolean {
+    canClubView(athleteId: string, _clubId: string): boolean {
         const consent = this.getConsent(athleteId);
         return !!consent?.allowClubView;
     }

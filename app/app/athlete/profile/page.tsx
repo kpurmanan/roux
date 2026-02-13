@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
-import { User, Mail, Save, Ruler, Scale, Heart, Activity } from "lucide-react";
+import { User, Mail, Ruler, Scale, Heart, Activity } from "lucide-react";
 import { athleteRepo } from "@/lib/data/repositories/athlete-repository";
 import { PhysicalBaseline } from "@/lib/types/performance";
 
 export default function AthleteProfilePage() {
-    const { session, updateUser } = useAuth();
+    const { session } = useAuth();
     const [consent, setConsent] = useState(() => {
         if (!session.user) return { allowCoachView: false, allowClubView: false };
         return dataStore.getConsent(session.user.id) || { allowCoachView: false, allowClubView: false };
@@ -29,7 +29,7 @@ export default function AthleteProfilePage() {
         dataStore.updateConsent(session.user!.id, updated);
     };
 
-    const handleBaselineChange = (field: keyof PhysicalBaseline, value: any) => {
+    const handleBaselineChange = (field: keyof PhysicalBaseline, value: number) => {
         const updated = { ...baseline, [field]: value };
         setBaseline(updated);
         athleteRepo.updateProfile(session.user!.id, { baseline: updated });

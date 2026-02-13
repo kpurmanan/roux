@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe, Shield, Zap, Trophy, Users, Clock } from "lucide-react";
+import { ArrowRight, Globe, Shield, Zap, Trophy } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 

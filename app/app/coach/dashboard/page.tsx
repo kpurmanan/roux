@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { metricsRepo } from "@/lib/data/repositories/metrics-repository";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Users, Trophy, Award, AlertTriangle, TrendingUp, Activity } from "lucide-react";
+import { Users, Trophy, AlertTriangle, TrendingUp, Activity } from "lucide-react";
 import { User } from "@/lib/types";
 import { MetricsSnapshot } from "@/lib/types/performance";
 import { StatusChip } from "@/components/ui/status-chip";
@@ -17,7 +17,10 @@ export default function CoachDashboardPage() {
     // Derived state for athletes
     // In real app, useQuery or similar. Here we derive from session + dataStore.
     const club = session.user?.clubId ? dataStore.getClubById(session.user.clubId) : null;
-    const athletes = club ? club.members.map((id) => dataStore.getUserById(id)).filter((u): u is User => !!u) : [];
+    const athletes = useMemo(() =>
+        club ? club.members.map((id) => dataStore.getUserById(id)).filter((u): u is User => !!u) : [],
+        [club]
+    );
 
     useEffect(() => {
         if (athletes.length > 0) {
@@ -29,7 +32,7 @@ export default function CoachDashboardPage() {
             });
             setAthleteMetrics(m);
         }
-    }, [session.user, athletes.length]); // Simple dependency
+    }, [athletes]); // Simple dependency
 
     if (!session.user) return null;
 

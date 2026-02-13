@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Calendar, Users, DollarSign, Trophy } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusChip } from "@/components/ui/status-chip";
 import { dataStore } from "@/lib/data/store";
@@ -12,7 +12,6 @@ import { formatDate } from "@/lib/utils";
 
 export default function EventDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const [event, setEvent] = useState<Event | null>(null);
 
     useEffect(() => {

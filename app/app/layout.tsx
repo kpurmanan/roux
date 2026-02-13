@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/context";
-import { Home, Calendar, Activity, User, Trophy, Users, BarChart3 } from "lucide-react";
+import { Home, Calendar, Activity, User, Trophy, Users } from "lucide-react";
 import { DynamicIslandHeader } from "@/components/ui/dynamic-island-header";
 import { IOSBottomTabs } from "@/components/ui/ios-bottom-tabs";
 import { ThemeToggle } from "@/components/theme-toggle";

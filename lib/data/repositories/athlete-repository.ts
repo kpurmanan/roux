@@ -1,4 +1,4 @@
-import { AthletePerformanceProfile } from "@/lib/types/performance";
+import { AthletePerformanceProfile, InjuryRecord, RaceReadiness } from "@/lib/types/performance";
 
 class AthleteRepository {
     private profiles: Map<string, AthletePerformanceProfile> = new Map();
@@ -27,7 +27,7 @@ class AthleteRepository {
         return updated;
     }
 
-    addInjury(athleteId: string, injury: any): void {
+    addInjury(athleteId: string, injury: InjuryRecord): void {
         const profile = this.getProfile(athleteId);
         if (profile) {
             profile.injuries.push(injury);
@@ -35,7 +35,7 @@ class AthleteRepository {
         }
     }
 
-    addReadiness(athleteId: string, readiness: any): void {
+    addReadiness(athleteId: string, readiness: RaceReadiness): void {
         const profile = this.getProfile(athleteId);
         if (profile) {
             profile.readiness.unshift(readiness); // Newest first

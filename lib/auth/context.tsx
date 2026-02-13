@@ -31,8 +31,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setSession({ user, isAuthenticated: true });
                 }
             }
-        } catch (e) {
-            console.error("Failed to load session from localStorage:", e);
+        } catch {
+            console.error("Failed to load session from localStorage");
         }
     }, []);
 
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSession({ user, isAuthenticated: true });
             try {
                 localStorage.setItem("pacepass_user_id", user.id);
-            } catch (e) { }
+            } catch { }
             return true;
         }
         return false;
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession({ user: newUser, isAuthenticated: true });
         try {
             localStorage.setItem("pacepass_user_id", newUser.id);
-        } catch (e) { }
+        } catch { }
         return true;
     };
 
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession({ user: null, isAuthenticated: false });
         try {
             localStorage.removeItem("pacepass_user_id");
-        } catch (e) { }
+        } catch { }
     };
 
     const updateUser = (updates: Partial<User>) => {

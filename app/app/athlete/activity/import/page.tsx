@@ -8,7 +8,7 @@ import { metricsRepo } from "@/lib/data/repositories/metrics-repository";
 import { refreshAthleteMetrics } from "@/lib/engine/metrics";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useRouter } from "next/navigation";
-import { Loader2, CheckCircle, Smartphone, Download, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle, Download, ArrowRight } from "lucide-react";
 
 export default function ImportActivitiesPage() {
     const { session } = useAuth();

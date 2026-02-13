@@ -6,7 +6,6 @@ import {
     Result,
     Notification,
     Incident,
-    EventType,
 } from "../types";
 import { Consent } from "../types/performance";
 

@@ -9,13 +9,12 @@ import { refreshAthleteMetrics, calculateTrainingLoad } from "@/lib/engine/metri
 import { Activity, MetricsSnapshot } from "@/lib/types/performance";
 import { formatTime } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/glass-card";
-import { StatusChip } from "@/components/ui/status-chip";
 import {
-    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import {
-    Trophy, TrendingUp, Award, Activity as ActivityIcon,
-    Zap, Calendar, AlertTriangle, Info, CheckCircle
+    Trophy, Activity as ActivityIcon,
+    Zap, AlertTriangle, Info, CheckCircle
 } from "lucide-react";
 
 export default function AthletePerformancePage() {
@@ -42,18 +41,7 @@ export default function AthletePerformancePage() {
 
     const results = dataStore.getResults({ athleteId: session.user.id });
 
-    // Preparation for charts
-    // Group activities by week for load chart
-    const weeklyLoadData = activities.slice().reverse().reduce((acc: any[], act) => {
-        const date = new Date(act.timestamp);
-        const weekKey = `${date.getMonth() + 1}/${date.getDate()}`; // Simplified for mock
-        // In real app, proper week grouping needed. 
-        // For mock, let's just show raw activities or simple grouping if extensive.
-        // Let's map individual activities for "Load" to show the concept
-        return acc;
-    }, []);
-
-    // Alternative: Generate 12-week chart from activities
+    // Alternative: Generate 90-day chart from activities
     const chartData = activities
         .filter(a => new Date(a.timestamp) > new Date(Date.now() - 90 * 24 * 60 * 60 * 1000))
         .map(a => ({
@@ -90,10 +78,7 @@ export default function AthletePerformancePage() {
                             <span className={`text-2xl font-bold ${(metrics?.acRatio || 0) > 1.3 ? "text-yellow-400" :
                                 (metrics?.acRatio || 0) < 0.8 ? "text-blue-400" : "text-green-400"
                                 }`}>
-                                {metrics?.acRatio.toFixed(2)}
-                            </span>
-                            <span className="text-xs mb-1 text-muted-foreground">
-                                {metrics?.acRatio! > 1.3 ? "Overreaching" : metrics?.acRatio! < 0.8 ? "Detraining" : "Optimal"}
+                                {metrics?.acRatio !== undefined ? (metrics.acRatio > 1.3 ? "Overreaching" : metrics.acRatio < 0.8 ? "Detraining" : "Optimal") : "N/A"}
                             </span>
                         </div>
                     </div>

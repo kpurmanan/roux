@@ -3,7 +3,7 @@ import { metricsRepo } from "../data/repositories/metrics-repository";
 import { consentRepo } from "../data/repositories/consent-repository";
 import { athleteRepo } from "../data/repositories/athlete-repository";
 import { dataStore } from "../data/store";
-import { Activity, ActivityType, AthletePerformanceProfile, Consent, MetricsSnapshot, PerformanceDNA } from "@/lib/types/performance";
+import { Activity, ActivityType, AthletePerformanceProfile, Consent, MetricsSnapshot } from "@/lib/types/performance";
 import { generateId } from "@/lib/utils";
 import { refreshAthleteMetrics } from "../engine/metrics";
 
