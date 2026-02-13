@@ -44,7 +44,7 @@ export default function LandingPage() {
                         <span className="gradient-text">Trust & Timing.</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-                        The world's premier platform for endurance events. From marathons to triathlons,
+                        The world&apos;s premier platform for endurance events. From marathons to triathlons,
                         manage every aspect of your race with precision and style.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

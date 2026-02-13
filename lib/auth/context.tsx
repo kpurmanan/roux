@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const signIn = async (email: string, password: string): Promise<boolean> => {
+    const signIn = async (email: string, _password: string): Promise<boolean> => {
         // Mock authentication - in real app, this would call an API
         const user = dataStore.getUserByEmail(email);
         if (user) {

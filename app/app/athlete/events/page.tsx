@@ -3,9 +3,9 @@
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
-import { StatusChip } from "@/components/ui/status-chip";
+import { StatusChip, StatusChipProps } from "@/components/ui/status-chip";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Calendar, MapPin, Award } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -20,7 +20,7 @@ export default function AthleteEventsPage() {
         event: dataStore.getEventById(reg.eventId)!,
     }));
 
-    const statusVariantMap: Record<string, any> = {
+    const statusVariantMap: Record<string, StatusChipProps["variant"]> = {
         Pending: "pending",
         Paid: "paid",
         Confirmed: "confirmed",

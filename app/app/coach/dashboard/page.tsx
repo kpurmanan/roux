@@ -3,7 +3,8 @@
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Users, Trophy, TrendingUp, Award } from "lucide-react";
+import { Users, Trophy, Award } from "lucide-react";
+import { User } from "@/lib/types";
 
 export default function CoachDashboardPage() {
     const { session } = useAuth();
@@ -11,7 +12,7 @@ export default function CoachDashboardPage() {
     if (!session.user) return null;
 
     const club = session.user.clubId ? dataStore.getClubById(session.user.clubId) : null;
-    const athletes = club ? club.members.map((id) => dataStore.getUserById(id)).filter(Boolean) : [];
+    const athletes = club ? club.members.map((id) => dataStore.getUserById(id)).filter((u): u is User => !!u) : [];
 
     return (
         <div className="space-y-6">
@@ -51,7 +52,7 @@ export default function CoachDashboardPage() {
             <GlassCard>
                 <h3 className="font-bold mb-4">Athlete Roster</h3>
                 <div className="space-y-3">
-                    {athletes.map((athlete: any) => {
+                    {athletes.map((athlete: User) => {
                         const consent = dataStore.getConsent(athlete.id);
                         const hasAccess = consent?.allowCoachView || consent?.allowClubView;
 
