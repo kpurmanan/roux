@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -9,8 +10,13 @@ import { formatTime } from "@/lib/utils";
 
 export default function AthletePerformancePage() {
     const { session } = useAuth();
+    const [mounted, setMounted] = useState(false);
 
-    if (!session.user) return null;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted || !session.user) return null;
 
     const results = dataStore.getResults({ athleteId: session.user.id });
 

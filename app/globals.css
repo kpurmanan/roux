@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,7 +31,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    
+
     /* Glass UI variables */
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.18);
@@ -61,7 +63,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    
+
     /* Glass UI variables - dark mode */
     --glass-bg: rgba(17, 25, 40, 0.75);
     --glass-border: rgba(255, 255, 255, 0.125);
@@ -73,6 +75,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -80,6 +83,7 @@
 }
 
 @layer utilities {
+
   /* Glass morphism utilities */
   .glass {
     background: var(--glass-bg);
@@ -88,7 +92,7 @@
     border: 1px solid var(--glass-border);
     box-shadow: 0 8px 32px 0 var(--glass-shadow);
   }
-  
+
   .glass-elevated {
     background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(180%);
@@ -96,7 +100,7 @@
     border: 1px solid var(--glass-border);
     box-shadow: 0 12px 48px 0 var(--glass-shadow);
   }
-  
+
   .glass-subtle {
     background: var(--glass-bg);
     backdrop-filter: blur(8px) saturate(150%);
@@ -104,26 +108,26 @@
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 16px 0 var(--glass-shadow);
   }
-  
+
   /* Custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.3);
     border-radius: 4px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
   }
-  
+
   /* Gradient text */
   .gradient-text {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -131,24 +135,13 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   /* iOS-style safe area */
   .safe-area-top {
     padding-top: env(safe-area-inset-top);
   }
-  
+
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
-}
-
-/* Font imports */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }

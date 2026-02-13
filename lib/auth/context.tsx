@@ -22,12 +22,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Load session from localStorage on mount
     useEffect(() => {
-        const storedUserId = localStorage.getItem("pacepass_user_id");
-        if (storedUserId) {
-            const user = dataStore.getUserById(storedUserId);
-            if (user) {
-                setSession({ user, isAuthenticated: true });
+        try {
+            const storedUserId = localStorage.getItem("pacepass_user_id");
+            if (storedUserId) {
+                const user = dataStore.getUserById(storedUserId);
+                if (user) {
+                    setSession({ user, isAuthenticated: true });
+                }
             }
+        } catch (e) {
+            console.error("Failed to load session from localStorage:", e);
         }
     }, []);
 
@@ -36,7 +40,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const user = dataStore.getUserByEmail(email);
         if (user) {
             setSession({ user, isAuthenticated: true });
-            localStorage.setItem("pacepass_user_id", user.id);
+            try {
+                localStorage.setItem("pacepass_user_id", user.id);
+            } catch (e) { }
             return true;
         }
         return false;
@@ -64,13 +70,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         dataStore.createUser(newUser);
         setSession({ user: newUser, isAuthenticated: true });
-        localStorage.setItem("pacepass_user_id", newUser.id);
+        try {
+            localStorage.setItem("pacepass_user_id", newUser.id);
+        } catch (e) { }
         return true;
     };
 
     const signOut = () => {
         setSession({ user: null, isAuthenticated: false });
-        localStorage.removeItem("pacepass_user_id");
+        try {
+            localStorage.removeItem("pacepass_user_id");
+        } catch (e) { }
     };
 
     const updateUser = (updates: Partial<User>) => {
