@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/context";
 import { Home, Calendar, Activity, User, Trophy, Users, BarChart3 } from "lucide-react";
 import { DynamicIslandHeader } from "@/components/ui/dynamic-island-header";
-import { iOSBottomTabs } from "@/components/ui/ios-bottom-tabs";
+import { IOSBottomTabs } from "@/components/ui/ios-bottom-tabs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
@@ -84,7 +84,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </main>
 
             {/* Mobile Bottom Tabs */}
-            <iOSBottomTabs tabs={tabs} />
+            <IOSBottomTabs tabs={tabs} />
         </div>
     );
 }

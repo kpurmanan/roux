@@ -13,11 +13,11 @@ interface TabItem {
     icon: LucideIcon;
 }
 
-interface iOSBottomTabsProps {
+interface IOSBottomTabsProps {
     tabs: TabItem[];
 }
 
-export function iOSBottomTabs({ tabs }: iOSBottomTabsProps) {
+export function IOSBottomTabs({ tabs }: IOSBottomTabsProps) {
     const pathname = usePathname();
 
     return (
