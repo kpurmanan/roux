@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { metricsRepo } from "@/lib/data/repositories/metrics-repository";
@@ -12,6 +13,7 @@ import { StatusChip } from "@/components/ui/status-chip";
 
 export default function CoachDashboardPage() {
     const { session } = useAuth();
+    const router = useRouter();
     const [athleteMetrics, setAthleteMetrics] = useState<Record<string, MetricsSnapshot>>({});
 
     // Derived state for athletes
@@ -173,7 +175,7 @@ export default function CoachDashboardPage() {
 
                                     {hasAccess ? (
                                         <button
-                                            onClick={() => window.location.href = `/app/coach/athlete/${athlete.id}`}
+                                            onClick={() => router.push(`/app/coach/athlete/${athlete.id}`)}
                                             className="glass-elevated px-4 py-2 rounded-xl text-sm font-medium group-hover:bg-purple-500/20 group-hover:text-purple-300 transition-all"
                                         >
                                             View Profile
