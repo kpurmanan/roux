@@ -18,6 +18,10 @@ const statusChipVariants = cva(
                 draft: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
                 published: "bg-green-500/20 text-green-400 border border-green-500/30",
                 closed: "bg-red-500/20 text-red-400 border border-red-500/30",
+                warning: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
+                info: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
+                success: "bg-green-500/20 text-green-300 border border-green-500/30",
+                default: "bg-gray-500/20 text-gray-300 border border-gray-500/30",
             },
         },
         defaultVariants: {

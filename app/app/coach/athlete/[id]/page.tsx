@@ -1,85 +1,164 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
-import { activityRepo } from "@/lib/data/repositories/activity-repository";
+import { athleteRepo } from "@/lib/data/repositories/athlete-repository";
 import { metricsRepo } from "@/lib/data/repositories/metrics-repository";
-import { refreshAthleteMetrics, calculateTrainingLoad } from "@/lib/engine/metrics";
-import { Activity, MetricsSnapshot } from "@/lib/types/performance";
-import { formatTime } from "@/lib/utils";
+import { activityRepo } from "@/lib/data/repositories/activity-repository";
+import { calculateTrainingLoad } from "@/lib/engine/metrics";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusChip } from "@/components/ui/status-chip";
+import { Activity, MetricsSnapshot, PhysicalBaseline } from "@/lib/types/performance";
+import { formatTime } from "@/lib/utils";
 import {
-    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import {
-    Trophy, TrendingUp, Award, Activity as ActivityIcon,
-    Zap, Calendar, AlertTriangle, Info, CheckCircle
+    Trophy, TrendingUp, Activity as ActivityIcon, Zap, AlertTriangle, Info, CheckCircle, Lock, ArrowLeft, Ruler, Scale, Heart
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export default function AthletePerformancePage() {
+export default function CoachAthleteView({ params }: { params: Promise<{ id: string }> }) {
     const { session } = useAuth();
-    const [mounted, setMounted] = useState(false);
+    const router = useRouter();
+    const resolvedParams = use(params);
+    const athleteId = resolvedParams.id;
+
+    // State
+    const [athlete, setAthlete] = useState<any>(null);
     const [metrics, setMetrics] = useState<MetricsSnapshot | null>(null);
     const [activities, setActivities] = useState<Activity[]>([]);
+    const [baseline, setBaseline] = useState<PhysicalBaseline | null>(null);
+    const [accessDenied, setAccessDenied] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        if (session.user) {
-            // Fetch activities
-            const acts = activityRepo.getActivitiesByAthlete(session.user.id);
-            setActivities(acts);
+        if (!session.user) return;
 
-            // Calculate real-time metrics
-            const snapshot = refreshAthleteMetrics(session.user.id, acts);
-            metricsRepo.saveMetrics(snapshot);
-            setMetrics(snapshot);
+        // 1. Check Auth (Must be Coach)
+        if (session.user.role !== "coach") {
+            router.push("/");
+            return;
         }
-    }, [session.user]);
 
-    if (!mounted || !session.user) return null;
+        // 2. Check Consent
+        const consent = dataStore.getConsent(athleteId);
+        if (!consent?.allowCoachView && !consent?.allowClubView) {
+            setAccessDenied(true);
+            return;
+        }
 
-    const results = dataStore.getResults({ athleteId: session.user.id });
+        // 3. Load Data
+        const user = dataStore.getUserById(athleteId);
+        if (!user) return;
 
-    // Preparation for charts
-    // Group activities by week for load chart
-    const weeklyLoadData = activities.slice().reverse().reduce((acc: any[], act) => {
-        const date = new Date(act.timestamp);
-        const weekKey = `${date.getMonth() + 1}/${date.getDate()}`; // Simplified for mock
-        // In real app, proper week grouping needed. 
-        // For mock, let's just show raw activities or simple grouping if extensive.
-        // Let's map individual activities for "Load" to show the concept
-        return acc;
-    }, []);
+        setAthlete(user);
 
-    // Alternative: Generate 12-week chart from activities
+        const acts = activityRepo.getActivitiesByAthlete(athleteId);
+        setActivities(acts);
+
+        const snap = metricsRepo.getSnapshot(athleteId);
+        setMetrics(snap || null);
+
+        const profile = athleteRepo.getProfile(athleteId);
+        if (profile?.baseline) setBaseline(profile.baseline);
+
+    }, [session.user, athleteId, router]);
+
+    if (!session.user) return null;
+
+    if (accessDenied) {
+        return (
+            <div className="max-w-md mx-auto py-12 text-center">
+                <GlassCard className="p-8 space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center text-red-500">
+                        <Lock className="h-8 w-8" />
+                    </div>
+                    <h2 className="text-xl font-bold">Access Denied</h2>
+                    <p className="text-muted-foreground">
+                        This athlete has not granted permission for coaches to view their performance data.
+                    </p>
+                    <button
+                        onClick={() => router.back()}
+                        className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium transition-colors"
+                    >
+                        Go Back
+                    </button>
+                </GlassCard>
+            </div>
+        );
+    }
+
+    if (!athlete || !metrics) {
+        return <div className="p-8 text-center">Loading athlete profile...</div>;
+    }
+
+    // Chart Data
     const chartData = activities
         .filter(a => new Date(a.timestamp) > new Date(Date.now() - 90 * 24 * 60 * 60 * 1000))
         .map(a => ({
             date: new Date(a.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-            load: Math.round(a.durationSec / 60 * (a.rpe || 5) / 10 * 2), // Approx load
+            load: Math.round(calculateTrainingLoad(a)),
             type: a.type
         }))
         .reverse();
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6">
+                <button
+                    onClick={() => router.back()}
+                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </button>
                 <div>
-                    <h1 className="text-3xl font-bold mb-2">Performance Intelligence</h1>
-                    <p className="text-muted-foreground">Analysing your training load and race readiness</p>
-                </div>
-                {metrics?.performanceDna && (
-                    <div className="flex gap-2">
-                        {metrics.performanceDna.map(dna => (
-                            <span key={dna} className="glass-elevated px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30">
-                                🧬 {dna}
+                    <h1 className="text-2xl font-bold">{athlete.name}</h1>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>{athlete.email}</span>
+                        {metrics.performanceDna?.map(dna => (
+                            <span key={dna} className="glass-elevated px-2 py-0.5 rounded-full text-xs font-bold text-white">
+                                {dna}
                             </span>
                         ))}
                     </div>
-                )}
+                </div>
             </div>
+
+            {/* Baseline Stats */}
+            {baseline && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <GlassCard padding="sm" className="flex items-center gap-3">
+                        <Ruler className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                            <p className="text-xs text-muted-foreground uppercase">Height</p>
+                            <p className="font-bold">{baseline.heightCm || "--"} cm</p>
+                        </div>
+                    </GlassCard>
+                    <GlassCard padding="sm" className="flex items-center gap-3">
+                        <Scale className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                            <p className="text-xs text-muted-foreground uppercase">Weight</p>
+                            <p className="font-bold">{baseline.weightKg || "--"} kg</p>
+                        </div>
+                    </GlassCard>
+                    <GlassCard padding="sm" className="flex items-center gap-3">
+                        <Heart className="h-5 w-5 text-red-400" />
+                        <div>
+                            <p className="text-xs text-muted-foreground uppercase">Resting HR</p>
+                            <p className="font-bold">{baseline.restingHr || "--"} bpm</p>
+                        </div>
+                    </GlassCard>
+                    <GlassCard padding="sm" className="flex items-center gap-3">
+                        <ActivityIcon className="h-5 w-5 text-purple-400" />
+                        <div>
+                            <p className="text-xs text-muted-foreground uppercase">Max HR</p>
+                            <p className="font-bold">{baseline.maxHr || "--"} bpm</p>
+                        </div>
+                    </GlassCard>
+                </div>
+            )}
 
             {/* Main KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -87,44 +166,33 @@ export default function AthletePerformancePage() {
                     <div className="flex flex-col">
                         <span className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">AC Ratio</span>
                         <div className="flex items-end gap-2">
-                            <span className={`text-2xl font-bold ${(metrics?.acRatio || 0) > 1.3 ? "text-yellow-400" :
-                                (metrics?.acRatio || 0) < 0.8 ? "text-blue-400" : "text-green-400"
+                            <span className={`text-2xl font-bold ${metrics.acRatio > 1.3 ? "text-yellow-400" :
+                                metrics.acRatio < 0.8 ? "text-blue-400" : "text-green-400"
                                 }`}>
-                                {metrics?.acRatio.toFixed(2)}
+                                {metrics.acRatio.toFixed(2)}
                             </span>
                             <span className="text-xs mb-1 text-muted-foreground">
-                                {metrics?.acRatio! > 1.3 ? "Overreaching" : metrics?.acRatio! < 0.8 ? "Detraining" : "Optimal"}
+                                {metrics.acRatio > 1.3 ? "Risk" : metrics.acRatio < 0.8 ? "Low" : "Optimal"}
                             </span>
                         </div>
                     </div>
                 </GlassCard>
-
                 <GlassCard padding="sm">
                     <div className="flex flex-col">
                         <span className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Consistency</span>
-                        <div className="flex items-end gap-2">
-                            <span className="text-2xl font-bold">{Math.round(metrics?.consistencyScore || 0)}%</span>
-                        </div>
+                        <span className="text-2xl font-bold">{Math.round(metrics.consistencyScore)}%</span>
                     </div>
                 </GlassCard>
-
                 <GlassCard padding="sm">
                     <div className="flex flex-col">
                         <span className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Chronic Load</span>
-                        <div className="flex items-end gap-2">
-                            <span className="text-2xl font-bold">{Math.round(metrics?.chronicLoad || 0)}</span>
-                            <span className="text-xs mb-1 text-muted-foreground">Fitness</span>
-                        </div>
+                        <span className="text-2xl font-bold">{Math.round(metrics.chronicLoad)}</span>
                     </div>
                 </GlassCard>
-
                 <GlassCard padding="sm">
                     <div className="flex flex-col">
                         <span className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Acute Load</span>
-                        <div className="flex items-end gap-2">
-                            <span className="text-2xl font-bold">{Math.round(metrics?.acuteLoad || 0)}</span>
-                            <span className="text-xs mb-1 text-muted-foreground">Fatigue</span>
-                        </div>
+                        <span className="text-2xl font-bold">{Math.round(metrics.acuteLoad)}</span>
                     </div>
                 </GlassCard>
             </div>
@@ -135,10 +203,10 @@ export default function AthletePerformancePage() {
                     <GlassCard>
                         <h3 className="font-bold mb-4 flex items-center gap-2">
                             <Zap className="h-4 w-4 text-yellow-500" />
-                            AI Insights
+                            Generated Insights
                         </h3>
                         <div className="space-y-3">
-                            {metrics?.insights.map((insight) => (
+                            {metrics.insights.map((insight) => (
                                 <div key={insight.id} className={`p-3 rounded-lg border text-sm ${insight.type === 'Warning' ? 'bg-red-500/10 border-red-500/20' :
                                     insight.type === 'Positive' ? 'bg-green-500/10 border-green-500/20' :
                                         'bg-blue-500/10 border-blue-500/20'
@@ -152,25 +220,9 @@ export default function AthletePerformancePage() {
                                     <p className="text-muted-foreground text-xs leading-relaxed">{insight.description}</p>
                                 </div>
                             ))}
-                            {metrics?.insights.length === 0 && (
-                                <p className="text-sm text-muted-foreground py-4 text-center">No insights available yet.</p>
+                            {metrics.insights.length === 0 && (
+                                <p className="text-sm text-muted-foreground py-4 text-center">No insights available.</p>
                             )}
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard>
-                        <h3 className="font-bold mb-4 flex items-center gap-2">
-                            <Trophy className="h-4 w-4 text-purple-500" />
-                            Race Results
-                        </h3>
-                        <div className="space-y-3">
-                            {results.slice(0, 3).map(r => (
-                                <div key={r.id} className="flex justify-between items-center text-sm glass-subtle p-2 rounded">
-                                    <span>{dataStore.getEventById(r.eventId)?.title}</span>
-                                    <span className="font-mono font-bold">{formatTime(r.chipTime)}</span>
-                                </div>
-                            ))}
-                            {results.length === 0 && <p className="text-muted-foreground text-xs">No race results yet.</p>}
                         </div>
                     </GlassCard>
                 </div>
@@ -213,9 +265,9 @@ export default function AthletePerformancePage() {
                     </GlassCard>
 
                     <GlassCard>
-                        <h3 className="font-bold mb-4">Activity Log</h3>
-                        <div className="space-y-2">
-                            {activities.slice(0, 5).map(act => (
+                        <h3 className="font-bold mb-4">Recent Activities</h3>
+                        <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                            {activities.slice(0, 10).map(act => (
                                 <div key={act.id} className="flex items-center justify-between p-3 glass-subtle rounded-xl text-sm">
                                     <div className="flex items-center gap-3">
                                         <div className={`mt-0.5 p-1.5 rounded-full ${act.type === 'Run' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
@@ -226,7 +278,6 @@ export default function AthletePerformancePage() {
                                             <div className="flex gap-2 text-xs text-muted-foreground">
                                                 <span>{new Date(act.timestamp).toLocaleDateString()}</span>
                                                 <span>• {formatTime(act.durationSec)}</span>
-                                                {act.distanceMeters > 0 && <span>• {(act.distanceMeters / 1000).toFixed(1)}km</span>}
                                             </div>
                                         </div>
                                     </div>
@@ -242,5 +293,4 @@ export default function AthletePerformancePage() {
             </div>
         </div>
     );
-
 }

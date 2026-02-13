@@ -4,12 +4,12 @@ import {
     Event,
     Registration,
     Result,
-    Consent,
     Notification,
     Incident,
     EventStatus,
     RegistrationStatus,
 } from "../types";
+import { Consent } from "./../types/performance";
 import {
     users as seedUsers,
     clubs as seedClubs,
@@ -207,7 +207,7 @@ class DataStore {
                 athleteId,
                 allowCoachView: false,
                 allowClubView: false,
-                updatedAt: new Date(),
+                lastUpdated: new Date().toISOString(),
                 ...updates,
             };
             this.consents.push(newConsent);

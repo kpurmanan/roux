@@ -7,6 +7,10 @@ class MetricsRepository {
         return this.snapshots.get(athleteId);
     }
 
+    getSnapshot(athleteId: string): MetricsSnapshot | undefined {
+        return this.getLatestMetrics(athleteId);
+    }
+
     saveMetrics(snapshot: MetricsSnapshot): void {
         this.snapshots.set(snapshot.athleteId, snapshot);
     }

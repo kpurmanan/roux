@@ -4,11 +4,11 @@ import {
     Event,
     Registration,
     Result,
-    Consent,
     Notification,
     Incident,
     EventType,
 } from "../types";
+import { Consent } from "../types/performance";
 
 // Sample Users
 export const users: User[] = [
@@ -374,19 +374,19 @@ export const consents: Consent[] = [
         athleteId: "user-2",
         allowCoachView: true,
         allowClubView: true,
-        updatedAt: new Date("2024-03-20"),
+        lastUpdated: "2024-03-20T10:00:00.000Z",
     },
     {
         athleteId: "user-3",
         allowCoachView: true,
         allowClubView: true,
-        updatedAt: new Date("2024-02-10"),
+        lastUpdated: "2024-02-10T10:00:00.000Z",
     },
     {
         athleteId: "user-5",
         allowCoachView: false,
         allowClubView: false,
-        updatedAt: new Date("2024-04-12"),
+        lastUpdated: "2024-04-12T10:00:00.000Z",
     },
 ];
 

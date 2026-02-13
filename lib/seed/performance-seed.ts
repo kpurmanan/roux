@@ -5,6 +5,7 @@ import { athleteRepo } from "../data/repositories/athlete-repository";
 import { dataStore } from "../data/store";
 import { Activity, ActivityType, AthletePerformanceProfile, Consent, MetricsSnapshot, PerformanceDNA } from "@/lib/types/performance";
 import { generateId } from "@/lib/utils";
+import { refreshAthleteMetrics } from "../engine/metrics";
 
 // Helper to generate activities
 function generateActivitiesForAthlete(athleteId: string, days: number = 90): Activity[] {
@@ -79,38 +80,14 @@ export function seedPerformanceData() {
             lastUpdated: new Date().toISOString()
         });
 
+
         // Generate activities and metrics
         const athleteActivities = generateActivitiesForAthlete(user.id);
         allActivities = [...allActivities, ...athleteActivities];
 
-        // Mock snapshot
-        snapshots.push({
-            athleteId: user.id,
-            date: new Date().toISOString(),
-            acuteLoad: 400 + Math.random() * 200,
-            chronicLoad: 350 + Math.random() * 200,
-            acRatio: 0.8 + Math.random() * 0.5, // 0.8 - 1.3 range
-            consistencyScore: 80 + Math.random() * 20,
-            rampRate: Math.random() * 50 - 25,
-            performanceDna: ["Consistency King", "Endurance Monster"],
-            insights: [
-                {
-                    id: generateId(),
-                    type: "Positive",
-                    title: "Solid Consistency",
-                    description: "You've trained 4 weeks in a row without missing a session.",
-                    metric: "Consistency"
-                },
-                {
-                    id: generateId(),
-                    type: "Warning",
-                    title: "Watch Fatigue",
-                    description: "Acute load is high. Consider a rest day.",
-                    metric: "AC Ratio",
-                    value: "1.35"
-                }
-            ]
-        });
+        // Generate real snapshot from activities
+        const realSnapshot = refreshAthleteMetrics(user.id, athleteActivities);
+        snapshots.push(realSnapshot);
     });
 
     // Seed repositories

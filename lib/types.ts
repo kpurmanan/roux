@@ -120,13 +120,7 @@ export interface Result {
     createdAt: Date;
 }
 
-// Consent entity
-export interface Consent {
-    athleteId: string;
-    allowCoachView: boolean;
-    allowClubView: boolean;
-    updatedAt: Date;
-}
+
 
 // Notification entity
 export interface Notification {

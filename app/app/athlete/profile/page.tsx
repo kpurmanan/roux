@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { dataStore } from "@/lib/data/store";
 import { GlassCard } from "@/components/ui/glass-card";
-import { User, Mail, Save } from "lucide-react";
+import { User, Mail, Save, Ruler, Scale, Heart, Activity } from "lucide-react";
+import { athleteRepo } from "@/lib/data/repositories/athlete-repository";
+import { PhysicalBaseline } from "@/lib/types/performance";
 
 export default function AthleteProfilePage() {
     const { session, updateUser } = useAuth();
@@ -13,12 +15,24 @@ export default function AthleteProfilePage() {
         return dataStore.getConsent(session.user.id) || { allowCoachView: false, allowClubView: false };
     });
 
+    const [baseline, setBaseline] = useState<PhysicalBaseline>(() => {
+        if (!session.user) return {};
+        const profile = athleteRepo.getProfile(session.user.id);
+        return profile?.baseline || {};
+    });
+
     if (!session.user) return null;
 
     const handleConsentChange = (field: "allowCoachView" | "allowClubView", value: boolean) => {
         const updated = { ...consent, [field]: value };
         setConsent(updated);
         dataStore.updateConsent(session.user!.id, updated);
+    };
+
+    const handleBaselineChange = (field: keyof PhysicalBaseline, value: any) => {
+        const updated = { ...baseline, [field]: value };
+        setBaseline(updated);
+        athleteRepo.updateProfile(session.user!.id, { baseline: updated });
     };
 
     return (
@@ -53,6 +67,65 @@ export default function AthleteProfilePage() {
                                 value={session.user.email}
                                 className="glass w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 readOnly
+                            />
+                        </div>
+                    </div>
+                </div>
+            </GlassCard>
+
+            {/* Physical Baseline */}
+            <GlassCard>
+                <h3 className="font-bold mb-4">Physical Baseline</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Height (cm)</label>
+                        <div className="relative">
+                            <Ruler className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="number"
+                                value={baseline.heightCm || ""}
+                                onChange={(e) => handleBaselineChange("heightCm", parseFloat(e.target.value))}
+                                className="glass w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                                placeholder="175"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Weight (kg)</label>
+                        <div className="relative">
+                            <Scale className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="number"
+                                value={baseline.weightKg || ""}
+                                onChange={(e) => handleBaselineChange("weightKg", parseFloat(e.target.value))}
+                                className="glass w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                                placeholder="70"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Resting HR</label>
+                        <div className="relative">
+                            <Heart className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="number"
+                                value={baseline.restingHr || ""}
+                                onChange={(e) => handleBaselineChange("restingHr", parseFloat(e.target.value))}
+                                className="glass w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                                placeholder="55"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Max HR</label>
+                        <div className="relative">
+                            <Activity className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="number"
+                                value={baseline.maxHr || ""}
+                                onChange={(e) => handleBaselineChange("maxHr", parseFloat(e.target.value))}
+                                className="glass w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                                placeholder="185"
                             />
                         </div>
                     </div>
