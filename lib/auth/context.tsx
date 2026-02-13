@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User, Session } from "../types";
 import { dataStore } from "../data/store";
+import { seedPerformanceData } from "../seed/performance-seed";
 
 interface AuthContextType {
     session: Session;
@@ -33,6 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             console.error("Failed to load session from localStorage:", e);
         }
+    }, []);
+
+    // Seed performance data
+    useEffect(() => {
+        seedPerformanceData();
     }, []);
 
     const signIn = async (email: string, _password: string): Promise<boolean> => {
