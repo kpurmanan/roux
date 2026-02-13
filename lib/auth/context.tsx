@@ -91,7 +91,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
     const context = useContext(AuthContext);
+
+    // During SSR/Prerender, we might not have the context if it's high up the tree
+    // especially if being probed by Next.js build workers.
+    // Instead of throwing, we return a default session if we're on the server.
     if (context === undefined) {
+        if (typeof window === "undefined") {
+            return {
+                session: { user: null, isAuthenticated: false },
+                signIn: async () => false,
+                signUp: async () => false,
+                signOut: () => { },
+                updateUser: () => { },
+            };
+        }
         throw new Error("useAuth must be used within an AuthProvider");
     }
     return context;
