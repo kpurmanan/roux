@@ -26,6 +26,10 @@ export default function NewEventPage() {
     if (!session.user) return null;
 
     const handleSubmit = () => {
+        if (!formData.date) {
+            alert("Please select a date for the event.");
+            return;
+        }
         const newEvent: Event = {
             id: generateId(),
             organiserId: session.user!.id,

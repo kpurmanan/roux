@@ -5,8 +5,11 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: Date | string): string {
+export function formatDate(date: Date | string | null | undefined): string {
+    if (!date) return "N/A";
     const d = typeof date === "string" ? new Date(date) : date;
+    if (isNaN(d.getTime())) return "Invalid Date";
+
     return new Intl.DateTimeFormat("en-US", {
         month: "short",
         day: "numeric",
@@ -14,8 +17,11 @@ export function formatDate(date: Date | string): string {
     }).format(d);
 }
 
-export function formatDateTime(date: Date | string): string {
+export function formatDateTime(date: Date | string | null | undefined): string {
+    if (!date) return "N/A";
     const d = typeof date === "string" ? new Date(date) : date;
+    if (isNaN(d.getTime())) return "Invalid Date";
+
     return new Intl.DateTimeFormat("en-US", {
         month: "short",
         day: "numeric",
