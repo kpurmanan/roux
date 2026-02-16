@@ -36,7 +36,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     const coachTabs = [
         { href: "/app/coach/dashboard", label: "Dashboard", icon: Home },
-        { href: "/app/coach/athletes", label: "Athletes", icon: Users },
+        { href: "/app/coach/dashboard", label: "Athletes", icon: Users },
     ];
 
     const tabs = session.user.role === "athlete" ? athleteTabs : session.user.role === "organiser" ? organiserTabs : coachTabs;
